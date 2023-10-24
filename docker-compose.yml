@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  api:
+    build: ./api
+    container_name: api_backend
+    ports:
+      - "3001:3001"
+    networks:
+      - mongo-compose-network
+    volumes:
+      - ./api:/app
+    depends_on:
+      - mongo
+  client:
+    build: ./client
+    container_name: client_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_DATABASE=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    networks:
+      - mongo-compose-network
+    ports:
+      - "27017:27017"
+
+networks:
+  mongo-compose-network:
+    driver: bridge
