@@ -10,22 +10,30 @@ export async function createPost(req: Request, res: Response) {
       return res.status(400).json({ message: "header is required" });
     }
 
+    if (header.length > 200) {
+      return res.status(400).json({ message: "max header size 200" });
+    }
+
     if (!note) {
       return res.status(400).json({ message: "note is required" });
+    }
+
+    if (note.length > 2000) {
+      return res.status(400).json({ message: "max note size 2000" });
     }
 
     if (!date) {
       return res.status(400).json({ message: "date is required" });
     }
 
-    // check if customer exists
+    // check if post exists
 
-    const existingCustomer = await db.collection("post").findOne({
+    const existingPost = await db.collection("post").findOne({
       header: header.toLowerCase(),
     });
 
-    if (existingCustomer) {
-      return res.status(400).json({ message: "Customer already exists" });
+    if (existingPost) {
+      return res.status(400).json({ message: "post already exists" });
     }
 
     const result = await db.collection("post").insertOne({

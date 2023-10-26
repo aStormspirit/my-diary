@@ -1,65 +1,78 @@
 import { useEffect, useState } from "react";
 import Card from "./Card";
-import data from "../data.json";
 import Pagination from "./Pagination";
-import axios from "axios";
 
-const Svg = () => {
-  const [post, setPost] = useState();
+const Filter = ({
+  posts,
+  setPosts,
+  load,
+}: {
+  posts: any[];
+  setPosts: React.Dispatch<React.SetStateAction<any>>;
+  load: boolean;
+}) => {
+  const [selected, setSelected] = useState(false);
+
+  function sortEggsInNest(a: any, b: any) {
+    if (new Date(a.date)?.getTime() > new Date(b.date)?.getTime()) {
+      return -1;
+    } else if (new Date(b.date)?.getTime() > new Date(a.date)?.getTime()) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  const oldest = () => {
+    return posts.sort(
+      (a: any, b: any) =>
+        new Date(a.date)?.getTime() - new Date(b.date)?.getTime()
+    );
+  };
+
+  const newest = () => {
+    return posts.sort(sortEggsInNest);
+  };
 
   useEffect(() => {
-    fetch("http://127.0.0.1:3001/post", {
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((posts) => console.log(posts));
-  }, []);
+    setPosts([...oldest()]);
+  }, [load]);
 
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g clip-path="url(#clip0_4_1006)">
-        <path
-          d="M4 6H20M4 12H14M4 18H8"
-          stroke="#050F28"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-        <path
-          d="M14 16L18 20M18 20L22 16M18 20L18 4"
-          stroke="white"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_4_1006">
-          <rect width="24" height="24" fill="white" />
-        </clipPath>
-      </defs>
-    </svg>
-  );
-};
-
-const Filter = () => {
   return (
     <div className="flex items-end mr-[10px] ml-[10px] mt-[28px]">
-      <div className="w-[50%] lg:w-[192px] h-[44px] lg:h-[64px] lg:rounded-[40px] rounded-[40px] bg-lightBlue flex items-center justify-center">
+      <div
+        className={` ${
+          selected ? "" : "bg-lightBlue rounded-[40px]"
+        } w-[50%] lg:w-[192px] h-[44px] lg:h-[64px] flex items-center justify-center`}
+        onClick={() => {
+          setSelected(false);
+          setPosts([...oldest()]);
+        }}
+      >
         <div>
-          <Svg />
+          {selected ? (
+            <img src="./SortingLeft2.svg" alt="" />
+          ) : (
+            <img src="./SortingLeft.svg" alt="" />
+          )}
         </div>
         <p>Сначала новые</p>
       </div>
-      <div className="w-[50%] lg:w-[192px] h-[44px] lg:h-[64px] flex items-center justify-center">
+      <div
+        className={` ${
+          !selected ? "" : "bg-lightBlue rounded-[40px]"
+        } w-[50%] lg:w-[192px] h-[44px] lg:h-[64px] flex items-center justify-center`}
+        onClick={() => {
+          setSelected(true);
+          setPosts([...newest()]);
+        }}
+      >
         <div>
-          <Svg />
+          {selected ? (
+            <img src="./SortingRight2.svg" alt="" />
+          ) : (
+            <img src="./SortingRight.svg" alt="" />
+          )}
         </div>
         <p>Сначала старые</p>
       </div>
@@ -67,24 +80,84 @@ const Filter = () => {
   );
 };
 
-const Main = () => {
+type Post = {
+  header: string;
+  date: string;
+  note: string;
+};
+
+const Main = ({ setPostSend, postSend }: any) => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [load, setLoad] = useState(false);
+  const [lowCount, setLowCount] = useState((page - 1) * 6);
+  const [highCount, setHighCount] = useState(page * 6);
+  const [pageCount, setPageCount] = useState(6);
+
+  useEffect(() => {
+    setLowCount((page - 1) * 6);
+    setHighCount(page * 6);
+  }, [page]);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:3001/post", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((json) => {
+        setPosts(json.customers);
+        setLoad(true);
+      })
+      .catch((err) => console.log(err));
+
+    setPostSend("");
+  }, [postSend]);
+
   return (
-    <div className="bg-[#F6F6F6] lg:rounded-t-[80px] rounded-t-[30px] mt-[10px]">
-      <div className="lg:flex justify-between lg:pb-[69px] pb-[159px]">
-        <h1 className="font-bold font-body 2xl:text-[112px] text-[42px] w-[343px] lg:w-[527px] xl:w-[797px] leading-10 lg:leading-[64px] 2xl:leading-[100px] pt-[29px] pr-[10] lg:pt-[60px] 2xl:pt-[80px]">
-          Мой дневничок
-        </h1>
-        <Filter />
+    <div className="w-full bg-[#F6F6F6] lg:rounded-t-[80px] rounded-t-[30px]">
+      <div className="container mx-auto mt-[10px] pl-[10px] pr-[10px]">
+        <div className="lg:flex justify-between lg:pb-[69px] pb-[159px]">
+          <h1 className="font-bold font-body w-[343px] lg:w-[527px] xl:w-[797px] text-[42px] leading-10 lg:leading-[64px] 2xl:leading-[100px] 2xl:text-[112px] pt-[29px] pr-[10] lg:pt-[60px] 2xl:pt-[80px]">
+            Мой дневничок
+          </h1>
+          <Filter posts={posts} setPosts={setPosts} load={load} />
+        </div>
+        <main className="grid gap-[20px] md:gap-[22px] lg:gap-[30px] 2xl:gap-[40px] md:gap-y-[30px] lg:gap-y-[40px] 2xl:gap-y-[80px] grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
+          {posts ? (
+            posts.map((el: any, i: number) => {
+              if (lowCount < i + 1 && highCount > i) {
+                return (
+                  <Card
+                    key={i}
+                    date={el.date}
+                    ind={i}
+                    note={el.note}
+                    header={el.header}
+                  />
+                );
+              } else {
+              }
+            })
+          ) : (
+            <></>
+          )}
+        </main>
+        <button
+          className="container bg-white rounded-[50px] h-[100px]"
+          onClick={() => {
+            setHighCount(page * 6 + 6);
+            setPageCount(pageCount + 6);
+          }}
+        >
+          Показать еще
+        </button>
+        <Pagination
+          page={page}
+          setPage={setPage}
+          setPageCount={setPageCount}
+          count={Math.ceil(posts.length / pageCount)}
+        />
       </div>
-      <main className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
-        {data.map((e: any, i: number) => (
-          <Card key={i} date={e.date} ind={i} note={e.note} header={e.header} />
-        ))}
-      </main>
-      <button className="bg-white rounded-[50px] 2xl:w-[1840px] lg:w-[982px] w-[355px] h-[100px]">
-        Показать еще
-      </button>
-      <Pagination />
     </div>
   );
 };

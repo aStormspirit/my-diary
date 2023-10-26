@@ -22,17 +22,17 @@ const Svg = () => {
 
 const Footer = () => {
   return (
-    <footer className="bg-navy h-[87px] lg:h-[70px] relative">
-      <a
-        className="bg-lightBlue w-[355px] h-[72px] absolute rounded-[40px] flex items-center justify-center top-[-50px]"
-        href="#logo"
-      >
-        <Svg />
-        <span>Наверх</span>
-      </a>
-      <h1 className="text-white font-body text-[18px] pt-[45px]">
-        Мой дневничок
-      </h1>
+    <footer className="bg-navy h-[87px] lg:h-[70px] relative px-[40px]">
+      <div className="container mx-auto flex h-full items-center">
+        <a
+          className="bg-lightBlue w-[calc(100%-20px)] sm:w-[355px] h-[72px] absolute rounded-[40px] flex items-center justify-center top-[-50px] left-[10px] sm:left-auto right-[10px] lg:right-[20px] xl:right-[40px]"
+          href="#logo"
+        >
+          <Svg />
+          <span>Наверх</span>
+        </a>
+        <h1 className="text-white font-body text-[18px]">Мой дневничок</h1>
+      </div>
     </footer>
   );
 };

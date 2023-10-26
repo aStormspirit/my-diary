@@ -1,5 +1,3 @@
-import React from "react";
-
 const Svg = ({ left }: any) => {
   return (
     <svg
@@ -31,16 +29,52 @@ const Svg = ({ left }: any) => {
   );
 };
 
-const Pagination = () => {
+const Pagination = ({ page, setPage, count, setPageCount }: any) => {
+  const arr: any = [];
+
+  for (let i = 1; i < count + 1; i++) {
+    arr.push(i);
+  }
+
   return (
     <div className="flex mt-[33px] items-center justify-between pb-[129px]">
-      <div>
+      <div
+        onClick={() => {
+          if (page == 1) {
+            setPage(1);
+            setPageCount(6);
+          } else {
+            setPage(page - 1);
+            setPageCount(6);
+          }
+        }}
+      >
         <Svg left={true} />
       </div>
-      {[1, 2, 3, 4, 5].map((e) => (
-        <p className="font-body font-bold text-[22px] leading-[20px]">{e}</p>
+      {arr.map((e: any) => (
+        <p
+          onClick={() => {
+            setPage(e);
+            setPageCount(6);
+          }}
+          className={` ${
+            page === e ? "text-lightBlue" : ""
+          } font-body font-bold text-[22px] leading-[20px] cursor-pointer`}
+        >
+          {e}
+        </p>
       ))}
-      <div>
+      <div
+        onClick={() => {
+          if (page == arr[arr.length - 1]) {
+            setPage(arr[arr.length - 1]);
+            setPageCount(6);
+          } else {
+            setPage(page + 1);
+            setPageCount(6);
+          }
+        }}
+      >
         <Svg />
       </div>
     </div>

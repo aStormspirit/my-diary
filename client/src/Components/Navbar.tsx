@@ -4,7 +4,7 @@ import { styles } from "../styles";
 
 const Svg = () => {
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex lg:hidden justify-center items-center">
       <svg
         width="24"
         height="24"
@@ -50,27 +50,29 @@ const Svg = () => {
   );
 };
 
-const Navbar = () => {
+const Navbar = ({ setPostSend }: any) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  function width() {
-    return window.innerWidth > 375;
-  }
-  console.log(width());
   return (
-    <div className="flex justify-between 2xl:h-[172px] lg:h-[118px] h-[71px] items-center">
+    <div className="container mx-auto flex justify-between 2xl:h-[172px] lg:h-[118px] h-[71px] items-center pl-[10px] pr-[10px]">
       <img
         className="2xl:w-[418px] 2xl:h-[110px] lg:w-[312px] lg:h-[77px] w-[186px] h-[45px] gap-10"
         src="./Logo.png"
         id="logo"
         alt="logo"
       />
-      <button onClick={() => setOpen(!open)} className={styles.button}>
+      <button
+        onClick={() => {
+          setOpen(!open);
+          document.body.classList.add("modal-show");
+        }}
+        className={styles.button}
+      >
         <span className="font-body text-[18px] text-white font-bold">
-          {width() ? "Написать" : <Svg />}
+          <p className="hidden lg:block ">Написать</p> <Svg />
         </span>
       </button>
-      {open ? <Popup open={setOpen} /> : <></>}
+      {open ? <Popup setPostSend={setPostSend} open={setOpen} /> : <></>}
     </div>
   );
 };
