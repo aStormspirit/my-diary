@@ -3,12 +3,12 @@ services:
   api:
     build: ./api
     container_name: api_backend
+    environment:
+      - DATABASE_URL=mongodb://admin:admin@mongo:27017/admin
     ports:
       - "3001:3001"
     networks:
       - mongo-compose-network
-    volumes:
-      - ./api:/app
     depends_on:
       - mongo
   client:

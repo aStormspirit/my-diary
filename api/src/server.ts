@@ -11,12 +11,13 @@ const app: any = express();
 app.use(cors());
 
 async function connect() {
-  const mongo = await MongoClient.connect(
-    "mongodb://admin:admin@mongo:27017/admin"
-  );
-  app.db = mongo.db();
-
-  await mongo.connect();
+  try {
+    const mongo = await MongoClient.connect(process.env.DATABASE_URL || "");
+    app.db = mongo.db();
+    await mongo.connect();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 connect();
